@@ -67,7 +67,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: data-splits
-          path: .
+          path:
+            X_train.csv
+            X_test.csv
+            y_train.csv
+            y_test.csv
       - name: Start MLflow tracking server
         run: |
           nohup mlflow ui --host 0.0.0.0 --port 8888 & sleep 5
