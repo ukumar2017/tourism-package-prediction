@@ -4,21 +4,20 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-#Load the model committed by the pipeline
-
-model_path = os.path.join(os.path.dirname(_file_),
+#Load the model committed by the pipeline using correct double underscores
+model_path = os.path.join(os.path.dirname(__file__),
               "best_tourism_package_prediction_model.joblib")
 
 model = joblib.load(model_path)
 st.title('Tourism package purchase prediction app')
 st.write("""
-The primary objective of this application is 
-predicts whether a customer will purchase the newly introduced Wellness 
+The primary objective of this application is
+predicts whether a customer will purchase the newly introduced Wellness
 Tourism Package before contacting them or not.
 
-Enter the TypeOfContact, CityTier, Occupation, Gender, 
+Enter the TypeOfContact, CityTier, Occupation, Gender,
 MaritalStatus, Passport, and MonthlyIncome data to get a prediction.
-""") 
+""")
 
 TypeOfContact = st.selectbox('Select Contact Type',["Self Enquiry","Company Invited"])
 CityTier = st.selectbox('Select City Tier',[1,2,3])
@@ -40,6 +39,6 @@ input_data = pd.DataFrame([{
 
 if st.button('Predict Purchase'):
     prediction = model.predict(input_data)[0]
-    result = "Package Purchaged" if prediction == 1 else "Package Not Purchaged"
+    result = "Package Purchased" if prediction == 1 else "Package Not Purchased"
     st.subheader('Prediction Result:')
     st.success(f"The model predicts: {result}")
