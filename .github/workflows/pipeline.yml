@@ -31,7 +31,7 @@ jobs:
   # ---- JOB 2: Data preparation ----------
   data-preparation:
     name: Data preparation
-    needs: registered-dataset # wait for job 1 to finish
+    needs: register-dataset # wait for job 1 to finish
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -46,13 +46,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: data-splits
-          path: 
+          path:
             X_train.csv
             X_test.csv
             y_train.csv
             y_test.csv
- # ---- JOB 3: Model Training + MLflow Tracking ------
- model-training:
+  # ---- JOB 3: Model Training + MLflow Tracking ------
+  model-training:
     name: Model Training
     needs: data-preparation  # waits for Job 2 to finish
     runs-on: ubuntu-latest
@@ -63,15 +63,11 @@ jobs:
           python-version: "3.11"
       - name: Install dependencies
         run: pip install -r tourism_project/deployment/requirements.txt
-      - name: Downoad train/test splits
+      - name: Download train/test splits
         uses: actions/download-artifact@v4
         with:
           name: data-splits
-          path: 
-            X_train.csv
-            X_test.csv
-            y_train.csv
-            y_test.csv
+          path: .
       - name: Start MLflow tracking server
         run: |
           nohup mlflow ui --host 0.0.0.0 --port 8888 & sleep 5
@@ -84,4 +80,3 @@ jobs:
           git add tourism_project/deployment/best_tourism_package_prediction_model.joblib
           git commit -m "Commit trained model [skip ci]" || echo "No changes to commit"
           git push
-          
