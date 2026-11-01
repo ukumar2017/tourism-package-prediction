@@ -35,7 +35,7 @@ input_data = pd.DataFrame([{
     'Gender': Gender,
     'MaritalStatus': MaritalStatus,
     'Passport': Passport,
-    'MonthlyIncome': MonthlyIncome
+    'MonthlyIncome': MonthlyIncome,
 }])
 
 if st.button('Predict Purchase'):
