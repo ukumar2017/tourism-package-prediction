@@ -1,3 +1,4 @@
+%%writefile .github/workflows/pipeline.yml
 name: tourism package CI/CD pipeline
 
 on:
@@ -46,7 +47,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: data-splits
-          path:
+          path: |
             X_train.csv
             X_test.csv
             y_train.csv
@@ -67,11 +68,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: data-splits
-          path:
-            X_train.csv
-            X_test.csv
-            y_train.csv
-            y_test.csv
+          path: .
       - name: Start MLflow tracking server
         run: |
           nohup mlflow ui --host 0.0.0.0 --port 8888 & sleep 5
