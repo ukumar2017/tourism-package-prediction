@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 df = pd.read_csv("tourism_project/data/tourism.csv")
 
 # Check unique values
-print(df['Geneder'].unique())
+print(df['Gender'].unique())
 
 # Correct inconsistent values
 df['Gender'] = df['Gender'].replace({
