@@ -1,0 +1,87 @@
+name: tourism package CI/CD pipeline
+
+on:
+  push:
+    branches:
+      - main          #Automatically triggers on push to the main branch
+  workflow_dispatch:  # Lets you click "Run workflow" in the Action tab
+
+permissions:
+  contents: write
+
+jobs:
+  #--------------------JOB 1: Register Dataset ------------
+  register-dataset:
+    name: Register Dataset
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install -r tourism_project/deployment/requirements.txt
+      - name: Register dataset
+        run: python tourism_project/model_building/data_register.py
+      - name: Upload registered dataset
+        uses: actions/upload-artifact@v4
+        with:
+          name: registered-data
+          path: tourism_project/data/tourism.csv
+  # ---- JOB 2: Data preparation ----------
+  data-preparation:
+    name: Data preparation
+    needs: registered-dataset # wait for job 1 to finish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install -r tourism_project/deployment/requirements.txt
+      - name: Prepare data
+        run: python tourism_project/model_building/prep.py
+      - name: Upload train/test splits
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-splits
+          path: 
+            X_train.csv
+            X_test.csv
+            y_train.csv
+            y_test.csv
+ # ---- JOB 3: Model Training + MLflow Tracking ------
+ model-training:
+    name: Model Training
+    needs: data-preparation  # waits for Job 2 to finish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install -r tourism_project/deployment/requirements.txt
+      - name: Downoad train/test splits
+        uses: actions/download-artifact@v4
+        with:
+          name: data-splits
+          path: 
+            X_train.csv
+            X_test.csv
+            y_train.csv
+            y_test.csv
+      - name: Start MLflow tracking server
+        run: |
+          nohup mlflow ui --host 0.0.0.0 --port 8888 & sleep 5
+      - name: Train model with MLflow tracking
+        run: python tourism_project/model_building/train.py
+      - name: Commit trained model
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add tourism_project/deployment/best_tourism_package_prediction_model.joblib
+          git commit -m "Commit trained model [skip ci]" || echo "No changes to commit"
+          git push
+          
