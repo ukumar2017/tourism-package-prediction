@@ -9,8 +9,8 @@ df = pd.read_csv(RAW_PATH)
 
 # Validate the expected columns are present or not
 
-expected_columns = ['CustomerID', 'ProdTaken', 'Age', 'TypeofContact', 'CityTier', 
-                    'Occupation', 'Gender', 'NumberOfPersonVisiting', 'PreferredPropertyStar',
+expected_columns = ['CustomerID', 'ProdTaken', 'Age', 'TypeofContact', 'CityTier',
+                    'Occupation', 'Gender', 'NumberOfPersonVisiting', 'PreferredPropertyStar'
 ]
 
 missing = [c for c in expected_columns if c not in df.columns]
